@@ -88,7 +88,7 @@ npm install normalize.css
 - react router and styled components right after
 - create pages directory in the source
 - for now Landing.js
-- \rafce
+- rafce
 - create component (snippets extension)
 - setup basic return
 
