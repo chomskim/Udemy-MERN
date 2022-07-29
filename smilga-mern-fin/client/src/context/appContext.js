@@ -223,7 +223,8 @@ const AppProvider = ({ children }) => {
         },
       })
     } catch (error) {
-      logoutUser()
+      console.log(error.response)
+      // logoutUser()
     }
     clearAlert()
   }
@@ -304,6 +305,12 @@ const AppProvider = ({ children }) => {
         showStats,
         clearFilters,
         changePage,
+        clearValues,
+        createJob,
+        getJobs,
+        setEditJob,
+        deleteJob,
+        editJob,
       }}
     >
       {children}
