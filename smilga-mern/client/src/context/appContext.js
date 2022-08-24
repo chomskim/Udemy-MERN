@@ -1,37 +1,7 @@
 import React, { useReducer, useContext } from 'react'
 import axios from 'axios'
 import reducer from './reducer'
-import {
-  DISPLAY_ALERT,
-  CLEAR_ALERT,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_SUCCESS,
-  REGISTER_USER_ERROR,
-  LOGIN_USER_BEGIN,
-  LOGIN_USER_SUCCESS,
-  LOGIN_USER_ERROR,
-  TOGGLE_SIDEBAR,
-  LOGOUT_USER,
-  UPDATE_USER_BEGIN,
-  UPDATE_USER_SUCCESS,
-  UPDATE_USER_ERROR,
-  HANDLE_CHANGE,
-  CLEAR_VALUES,
-  CREATE_JOB_BEGIN,
-  CREATE_JOB_SUCCESS,
-  CREATE_JOB_ERROR,
-  GET_JOBS_BEGIN,
-  GET_JOBS_SUCCESS,
-  SET_EDIT_JOB,
-  DELETE_JOB_BEGIN,
-  EDIT_JOB_BEGIN,
-  EDIT_JOB_SUCCESS,
-  EDIT_JOB_ERROR,
-  SHOW_STATS_BEGIN,
-  SHOW_STATS_SUCCESS,
-  CLEAR_FILTERS,
-  CHANGE_PAGE,
-} from './actions.js'
+import actions from './actions.js'
 
 const token = localStorage.getItem('token')
 const user = localStorage.getItem('user')
@@ -102,14 +72,14 @@ const AppProvider = ({ children }) => {
   )
 
   const displayAlert = () => {
-    dispatch({ type: DISPLAY_ALERT })
+    dispatch({ type: actions.DISPLAY_ALERT })
     clearAlert()
   }
 
   const clearAlert = () => {
     setTimeout(() => {
       dispatch({
-        type: CLEAR_ALERT,
+        type: actions.CLEAR_ALERT,
       })
     }, 3000)
   }
@@ -127,22 +97,22 @@ const AppProvider = ({ children }) => {
   }
 
   const toggleSidebar = () => {
-    dispatch({ type: TOGGLE_SIDEBAR })
+    dispatch({ type: actions.TOGGLE_SIDEBAR })
   }
 
   const logoutUser = () => {
-    dispatch({ type: LOGOUT_USER })
+    dispatch({ type: actions.LOGOUT_USER })
     removeUserFromLocalStorage()
   }
 
   const registerUser = async (currentUser) => {
-    dispatch({ type: REGISTER_USER_BEGIN })
+    dispatch({ type: actions.REGISTER_USER_BEGIN })
     try {
       const response = await axios.post('/api/v1/auth/register', currentUser)
       console.log(response)
       const { user, token, location } = response.data
       dispatch({
-        type: REGISTER_USER_SUCCESS,
+        type: actions.REGISTER_USER_SUCCESS,
         payload: {
           user,
           token,
@@ -158,7 +128,7 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       console.log(error.response)
       dispatch({
-        type: REGISTER_USER_ERROR,
+        type: actions.REGISTER_USER_ERROR,
         payload: { msg: error.response.data.msg },
       })
     }
@@ -167,13 +137,13 @@ const AppProvider = ({ children }) => {
 
   const loginUser = async (currentUser) => {
     // console.log(currentUser)
-    dispatch({ type: LOGIN_USER_BEGIN })
+    dispatch({ type: actions.LOGIN_USER_BEGIN })
     try {
       const response = await axios.post('/api/v1/auth/login', currentUser)
       console.log(response)
       const { user, token, location } = response.data
       dispatch({
-        type: LOGIN_USER_SUCCESS,
+        type: actions.LOGIN_USER_SUCCESS,
         payload: {
           user,
           token,
@@ -189,7 +159,7 @@ const AppProvider = ({ children }) => {
     } catch (error) {
       // console.log(error.response)
       dispatch({
-        type: LOGIN_USER_ERROR,
+        type: actions.LOGIN_USER_ERROR,
         payload: { msg: error.response.data.msg },
       })
     }
@@ -197,21 +167,21 @@ const AppProvider = ({ children }) => {
   }
 
   const updateUser = async (currentUser) => {
-    dispatch({ type: UPDATE_USER_BEGIN })
+    dispatch({ type: actions.UPDATE_USER_BEGIN })
     try {
       const { data } = await authFetch.patch('/auth/updateUser', currentUser)
 
       const { user, location, token } = data
 
       dispatch({
-        type: UPDATE_USER_SUCCESS,
+        type: actions.UPDATE_USER_SUCCESS,
         payload: { user, location, token },
       })
       addUserToLocalStorage({ user, location, token })
     } catch (error) {
       if (error.response.status !== 401) {
         dispatch({
-          type: UPDATE_USER_ERROR,
+          type: actions.UPDATE_USER_ERROR,
           payload: { msg: error.response.data.msg },
         })
       }
@@ -221,16 +191,16 @@ const AppProvider = ({ children }) => {
 
   const handleChange = ({ name, value }) => {
     dispatch({
-      type: HANDLE_CHANGE,
+      type: actions.HANDLE_CHANGE,
       payload: { name, value },
     })
   }
 
   const clearValues = () => {
-    dispatch({ type: CLEAR_VALUES })
+    dispatch({ type: actions.CLEAR_VALUES })
   }
   const createJob = async () => {
-    dispatch({ type: CREATE_JOB_BEGIN })
+    dispatch({ type: actions.CREATE_JOB_BEGIN })
     try {
       const { position, company, jobLocation, jobType, status } = state
       await authFetch.post('/jobs', {
@@ -240,12 +210,12 @@ const AppProvider = ({ children }) => {
         jobType,
         status,
       })
-      dispatch({ type: CREATE_JOB_SUCCESS })
-      dispatch({ type: CLEAR_VALUES })
+      dispatch({ type: actions.CREATE_JOB_SUCCESS })
+      dispatch({ type: actions.CLEAR_VALUES })
     } catch (error) {
       if (error.response.status === 401) return
       dispatch({
-        type: CREATE_JOB_ERROR,
+        type: actions.CREATE_JOB_ERROR,
         payload: { msg: error.response.data.msg },
       })
     }
@@ -259,12 +229,12 @@ const AppProvider = ({ children }) => {
     if (search) {
       url = url + `&search=${search}`
     }
-    dispatch({ type: GET_JOBS_BEGIN })
+    dispatch({ type: actions.GET_JOBS_BEGIN })
     try {
       const { data } = await authFetch(url)
       const { jobs, totalJobs, numOfPages } = data
       dispatch({
-        type: GET_JOBS_SUCCESS,
+        type: actions.GET_JOBS_SUCCESS,
         payload: {
           jobs,
           totalJobs,
@@ -278,10 +248,10 @@ const AppProvider = ({ children }) => {
   }
 
   const setEditJob = (id) => {
-    dispatch({ type: SET_EDIT_JOB, payload: { id } })
+    dispatch({ type: actions.SET_EDIT_JOB, payload: { id } })
   }
   const editJob = async () => {
-    dispatch({ type: EDIT_JOB_BEGIN })
+    dispatch({ type: actions.EDIT_JOB_BEGIN })
 
     try {
       const { position, company, jobLocation, jobType, status } = state
@@ -292,19 +262,19 @@ const AppProvider = ({ children }) => {
         jobType,
         status,
       })
-      dispatch({ type: EDIT_JOB_SUCCESS })
-      dispatch({ type: CLEAR_VALUES })
+      dispatch({ type: actions.EDIT_JOB_SUCCESS })
+      dispatch({ type: actions.CLEAR_VALUES })
     } catch (error) {
       if (error.response.status === 401) return
       dispatch({
-        type: EDIT_JOB_ERROR,
+        type: actions.EDIT_JOB_ERROR,
         payload: { msg: error.response.data.msg },
       })
     }
     clearAlert()
   }
   const deleteJob = async (jobId) => {
-    dispatch({ type: DELETE_JOB_BEGIN })
+    dispatch({ type: actions.DELETE_JOB_BEGIN })
     try {
       await authFetch.delete(`/jobs/${jobId}`)
       getJobs()
@@ -314,11 +284,11 @@ const AppProvider = ({ children }) => {
   }
 
   const showStats = async () => {
-    dispatch({ type: SHOW_STATS_BEGIN })
+    dispatch({ type: actions.SHOW_STATS_BEGIN })
     try {
       const { data } = await authFetch('/jobs/stats')
       dispatch({
-        type: SHOW_STATS_SUCCESS,
+        type: actions.SHOW_STATS_SUCCESS,
         payload: {
           stats: data.defaultStats,
           monthlyApplications: data.monthlyApplications,
@@ -331,10 +301,10 @@ const AppProvider = ({ children }) => {
   }
 
   const clearFilters = () => {
-    dispatch({ type: CLEAR_FILTERS })
+    dispatch({ type: actions.CLEAR_FILTERS })
   }
   const changePage = (page) => {
-    dispatch({ type: CHANGE_PAGE, payload: { page } })
+    dispatch({ type: actions.CHANGE_PAGE, payload: { page } })
   }
 
   return (
